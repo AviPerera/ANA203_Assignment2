@@ -197,6 +197,7 @@ class Order(Product):
                    row['Product Name'], row['Sales'], row['Quantity'],
                    row['Discount'], row['Profit'])
 
+
 # ==================================
 # CREATE OBJECTS FROM EACH CLASS
 # ==================================
@@ -205,24 +206,24 @@ class Order(Product):
 row = df.iloc[0]
 
 # Create Customer object
-#------------------------
+# ------------------------
 customer1 = Customer(row['Customer ID'], row['Customer Name'], row['Region'])
 print("\n Customer Info:", customer1.get_customer_info())
 
 # Create Category object
-#------------------------
+# ------------------------
 category1 = Category(row['Category'], row['Sub-Category'])
 print(" Category Info:", category1.show_info())
 
 # Create Product object
-#------------------------
+# ------------------------
 product1 = Product(row['Product ID'], row['Category'], row['Sub-Category'],
                    row['Product Name'], row['Sales'], row['Quantity'],
                    row['Discount'], row['Profit'])
 print(" Product Info:", product1.show_info())
 
 # Create Shipment object
-#------------------------
+# ------------------------
 shipment1 = Shipment(row['Ship Mode'], row['Ship Date'], row['City'])
 print(" Shipment Info:", shipment1.show_info())
 
@@ -233,3 +234,36 @@ print(" Order Summary:", order1.order_summary())
 # Demonstrate class and static methods
 print("\n Total unique customers in dataset:", Customer.count_customers(df))
 print(" Is customer ID valid?", Customer.validate_customer_id(customer1.customer_id))
+
+# ======================================================
+# BUSINESS SCENARIOS
+# ======================================================
+
+print("\n==============================")
+print("BUSINESS SCENARIO 1: PROFIT ANALYSIS")
+print("==============================")
+# Goal: Identify if a product is profitable or not and print a message
+for i in range(3):
+    sample_row = df.iloc[i]
+    product = Product(sample_row['Product ID'], sample_row['Category'],
+                      sample_row['Sub-Category'], sample_row['Product Name'],
+                      sample_row['Sales'], sample_row['Quantity'],
+                      sample_row['Discount'], sample_row['Profit'])
+    print(product.show_info())
+    if product.profit_margin() > 20:
+        print("This product is performing well with high profit margin.\n")
+    else:
+        print("Low profit margin. Needs review.\n")
+
+print("==============================")
+print("BUSINESS SCENARIO 2: SHIPPING PERFORMANCE")
+print("==============================")
+# Goal: Check how many orders were shipped in each mode for first few entries
+shipment_counts = {}
+for i in range(5):
+    ship = Shipment(df.iloc[i]['Ship Mode'], df.iloc[i]['Ship Date'], df.iloc[i]['City'])
+    # Count how many times each ship mode appears
+    shipment_counts[ship.ship_mode] = shipment_counts.get(ship.ship_mode, 0) + 1
+    print(ship.show_info())
+
+print("\nShipping Mode Summary:", shipment_counts)
