@@ -197,3 +197,39 @@ class Order(Product):
                    row['Product Name'], row['Sales'], row['Quantity'],
                    row['Discount'], row['Profit'])
 
+# ==================================
+# CREATE OBJECTS FROM EACH CLASS
+# ==================================
+
+# Take first row from dataset as sample
+row = df.iloc[0]
+
+# Create Customer object
+#------------------------
+customer1 = Customer(row['Customer ID'], row['Customer Name'], row['Region'])
+print("\n Customer Info:", customer1.get_customer_info())
+
+# Create Category object
+#------------------------
+category1 = Category(row['Category'], row['Sub-Category'])
+print(" Category Info:", category1.show_info())
+
+# Create Product object
+#------------------------
+product1 = Product(row['Product ID'], row['Category'], row['Sub-Category'],
+                   row['Product Name'], row['Sales'], row['Quantity'],
+                   row['Discount'], row['Profit'])
+print(" Product Info:", product1.show_info())
+
+# Create Shipment object
+#------------------------
+shipment1 = Shipment(row['Ship Mode'], row['Ship Date'], row['City'])
+print(" Shipment Info:", shipment1.show_info())
+
+# Create Order object using from_dataset class method
+order1 = Order.from_dataset(row)
+print(" Order Summary:", order1.order_summary())
+
+# Demonstrate class and static methods
+print("\n Total unique customers in dataset:", Customer.count_customers(df))
+print(" Is customer ID valid?", Customer.validate_customer_id(customer1.customer_id))
