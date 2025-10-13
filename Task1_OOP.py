@@ -31,12 +31,13 @@
 # Polymorphism means that methods with the same name can behave differently for different classes.
 # Example: The show_info() method is defined differently in several classes.
 
-#import  required libararies
+
+# import  required libararies
 import pandas as pd
 import re
 
 # Load CSV File
-csv_file_path = "Sample - Superstore.csv" # Load the Superstore dataset from the current project folder
+csv_file_path = "Sample - Superstore.csv"  # Load the Superstore dataset from the current project folder
 
 df = pd.read_csv(csv_file_path, on_bad_lines='skip', encoding='latin-1')
 
@@ -55,6 +56,7 @@ print("=" * 40)
 print("Descriptive Statistics: \n", df.describe())
 
 print("\nDataset loaded successfully! \n")
+
 
 # ======================================================
 # Class 1: Customer
@@ -83,35 +85,115 @@ class Customer:
     def count_customers(cls, dataframe):  # Uses pandas to count unique Customer IDs in the dataset
         return dataframe["Customer ID"].nunique()
 
-
     @staticmethod
     def validate_customer_id(customer_id):
-      """
-      Validates that the customer ID follows the format 'AA-12345'
-        - Starts with two uppercase letters
-        - Followed by a hyphen '-'
-        - Followed by exactly 5 digits
-      """
-      pattern = r"^[A-Z]{2}-\d{5}$"
-      return bool(re.match(pattern, customer_id))
-# ================================================================
-# Demonstration of all OOP concepts with the dataset
-# ================================================================
+        """
+        Validates that the customer ID follows the format 'AA-12345'
+          - Starts with two uppercase letters
+          - Followed by a hyphen '-'
+          - Followed by exactly 5 digits
+        """
+        pattern = r"^[A-Z]{2}-\d{5}$"
+        return bool(re.match(pattern, customer_id))
 
-# Select a sample row from the dataset to create objects
-sample_row = df.iloc[1]
 
-# Create Customer object
-customer1 = Customer(sample_row["Customer ID"], sample_row["Customer Name"], sample_row["Region"])
+# ======================================================
+# CLASS 2: Category
+# Demonstrates simple data grouping
+# ======================================================
+class Category:
+    def __init__(self, category_name, sub_category):  # Store category and sub-category names
 
-# Print results to show function outputs
-print("=" * 50)
-print("OOP Demonstration using Superstore Dataset")
-print("=" * 50)
+        self.category_name = category_name
+        self.sub_category = sub_category
 
-# Encapsulation & Abstraction Example
-print("\nCustomer Info (Encapsulation + Abstraction):")
-print(customer1.get_customer_info())
+    def show_info(self):
+        # Returns formatted category info
+        return f"Category: {self.category_name} | Sub-category: {self.sub_category}"
 
-# Count customers using the class method
-print("\nNo of Customers: ", customer1.count_customers(df))
+
+# ======================================================
+# CLASS 3: Product
+# Demonstrates Constructors, Instance Methods, and Abstraction
+# ======================================================
+class Product:
+    # Store key attributes about the product
+    def __init__(self, product_id, category, sub_category, name, sales, quantity, discount, profit):
+        self.product_id = product_id
+        self.category = category
+        self.sub_category = sub_category
+        self.name = name
+        self.sales = sales
+        self.quantity = quantity
+        self.discount = discount
+        self.profit = profit
+
+    def total_sales(self):
+        # Calculates total sales value
+        return self.sales * self.quantity
+
+    def profit_margin(self):
+        # Calculates profit percentage safely
+        return (self.profit / self.sales) * 100 if self.sales > 0 else 0
+
+    def show_info(self):
+        # Polymorphism: similar method name used in other classes but with different meaning
+        return f"Product: {self.name} | Sales: ${self.sales:.2f} | Profit Margin: {self.profit_margin():.2f}%"
+
+
+# ======================================================
+# CLASS 4: Shipment
+# Demonstrates basic data representation and Abstraction
+# ======================================================
+
+class Shipment:
+    def __init__(self, ship_mode, ship_date, city):
+        # Store delivery information
+        self.ship_mode = ship_mode
+        self.ship_date = ship_date
+        self.city = city
+
+    def show_info(self):
+        # Returns formatted delivery information
+        return f"Shipped via {self.ship_mode} to {self.city} on {self.ship_date}"
+
+
+# ======================================================
+# CLASS 5: Order (inherits from Product)
+# Demonstrates Inheritance and Polymorphism
+
+# ======================================================
+
+class Order(Product):
+    def __init__(self, order_id, order_date, customer: Customer, product_id, category, sub_category,
+                 name, sales, quantity, discount, profit):
+        # Reuse attributes from Product using inheritance
+        super().__init__(product_id, category, sub_category, name, sales, quantity, discount, profit)
+        # Add orderspecific attributes
+        self.order_id = order_id
+        self.order_date = order_date
+        self.customer = customer
+
+    def discounted_total(self):
+        # Abstraction: hides formula logic, just gives result
+        return self.sales * self.quantity * (1 - self.discount)
+
+    def total_sales(self):
+        # Polymorphism: overrides total_sales() method in Product
+        return self.sales * self.quantity * (1 - self.discount)
+
+    def order_summary(self):
+        # Returns full order summary
+        return (f"Order ID: {self.order_id} | Customer: {self.customer.get_customer_name()} | "
+                f"Product: {self.name} | Total after discount: ${self.total_sales():.2f}")
+
+    @classmethod
+    def from_dataset(cls, row):
+        # Creates customer automatically from dataset row
+        customer = Customer(row['Customer ID'], row['Customer Name'], row['Region'])
+        # Create order using dataset info
+        return cls(row['Order ID'], row['Order Date'], customer,
+                   row['Product ID'], row['Category'], row['Sub-Category'],
+                   row['Product Name'], row['Sales'], row['Quantity'],
+                   row['Discount'], row['Profit'])
+
