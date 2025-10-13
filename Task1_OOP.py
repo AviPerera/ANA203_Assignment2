@@ -1,14 +1,46 @@
 # Task 1: Object Oriented Programming
-# Load CSV File
+
+# =============================================
+# This script demonstrates OOP concepts (Abstraction, Encapsulation, Inheritance, Polymorphism)
+# using the Superstore dataset. It models real-world business entities such as
+# Customer, Product, Order, Category, and Shipment.
 
 
+# =================
+# ABSTRACTION
+# ==================
+# Abstraction means hiding complex details and showing only necessary information.
+# For example, when creating a Customer object, we don’t need to know how it stores or calculates data.
+# We just use its methods like get_customer_info().
+
+# =================
+# ENCAPSULATION
+# =================
+# Encapsulation means keeping data safe by restricting direct access.
+# We use private variables (with underscores like _name) and public methods to access them safely.
+
+# ==================
+# INHERITANCE
+# =================
+# Inheritance means one class can reuse or extend another.
+# For example, both Category and Product can share common properties like name and ID.
+
+# =================
+# POLYMORPHISM
+# =================
+# Polymorphism means that methods with the same name can behave differently for different classes.
+# Example: The show_info() method is defined differently in several classes.
+
+#import  required libararies
 import pandas as pd
+import re
 
-csv_file_path = "Sample - Superstore.csv"
+# Load CSV File
+csv_file_path = "Sample - Superstore.csv" # Load the Superstore dataset from the current project folder
 
 df = pd.read_csv(csv_file_path, on_bad_lines='skip', encoding='latin-1')
 
-# Print dataset shape, top and bottom rows, descriptive statistics
+# Print dataset shape, top and bottom rows, descriptive statistics to confirm successful loading
 print("\nDataset rows and columns: ", df.shape)
 print("=" * 40)
 
@@ -17,14 +49,12 @@ print("\nColumn names:")
 print(df.columns.tolist())
 print("=" * 40)
 
-print("Top 10 rows :\n", df.head(10))
-print("=" * 40)
-
-print("Bottom 5 rows :\n", df.tail(5))
+print("Top 5 rows :\n", df.head(5))
 print("=" * 40)
 
 print("Descriptive Statistics: \n", df.describe())
 
+print("\nDataset loaded successfully! \n")
 
 # ======================================================
 # Class 1: Customer
@@ -54,8 +84,18 @@ class Customer:
         return dataframe["Customer ID"].nunique()
 
 
+    @staticmethod
+    def validate_customer_id(customer_id):
+      """
+      Validates that the customer ID follows the format 'AA-12345'
+        - Starts with two uppercase letters
+        - Followed by a hyphen '-'
+        - Followed by exactly 5 digits
+      """
+      pattern = r"^[A-Z]{2}-\d{5}$"
+      return bool(re.match(pattern, customer_id))
 # ================================================================
-# Demonstration of all OOP concepts with dataset
+# Demonstration of all OOP concepts with the dataset
 # ================================================================
 
 # Select a sample row from the dataset to create objects
