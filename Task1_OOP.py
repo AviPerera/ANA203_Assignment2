@@ -2,9 +2,11 @@
 
 # =============================================
 # This script demonstrates OOP concepts (Abstraction, Encapsulation, Inheritance, Polymorphism)
-# using the Superstore dataset. It models real-world business entities such as
-# Customer, Product, Order, Category, and Shipment.
+# using the Superstore dataset. It models real-world business entities such as Customer, Product, Order, Category, and Shipment.
+# And use those concepts to seamlessly model real world busness scenarios
 
+# OOP concepts demonstrated in this script:
+# *******************************************
 
 # =================
 # ABSTRACTION
@@ -30,6 +32,41 @@
 # =================
 # Polymorphism means that methods with the same name can behave differently for different classes.
 # Example: The show_info() method is defined differently in several classes.
+
+# Example busness scenarios demonstrated in this script:
+# *******************************************************
+
+
+# Scenario 1: Customer Order Summary and Profit Analysis
+# ----------------------------------------------------------
+# In this scenario, the system creates several Customer, Product, and Order objects
+# using data from the Superstore dataset.
+# It demonstrates how an Order object links Customer and Product classes through
+# inheritance and composition.
+# The program calculates each order’s total sales, discount, and profit margin,
+# then prints a readable summary for managers to quickly review sales performance.
+#
+# Demonstrated OOP Concepts:
+# - Abstraction: Hiding internal calculations in methods (ex: discounted_total()).
+# - Encapsulation: Controlled access to Customer data through getter methods.
+# - Inheritance: Order inherits from Product to reuse its attributes and methods.
+# - Polymorphism: show_info() behaves differently in multiple classes.
+#
+# Scenario 2: Regional Sales and Shipping Efficiency Report
+# ----------------------------------------------------------
+# This scenario simulates a regional sales analysis where the system groups orders
+# by customer region and calculates the total number of orders, sales revenue, and
+# average shipping delay per region.
+# It uses multiple objects (Customer, Order, Shipment) working together to provide
+# a practical business insight helping management identify which regions perform best
+# and whether certain shipping modes are slower or less efficient.
+#
+# Demonstrated OOP Concepts:
+# - Reusability: Using existing classes to build new analytics without rewriting logic.
+# - Abstraction: Hiding data manipulation logic inside methods (ex: class methods for counting).
+# - Polymorphism: Using the same show_info() method across different entity types.
+# - Composition: Combining multiple objects (Customer + Shipment + Order) to model realworld data.
+# ==========================================================
 
 
 # import  required libararies
@@ -239,31 +276,209 @@ print(" Is customer ID valid?", Customer.validate_customer_id(customer1.customer
 # BUSINESS SCENARIOS
 # ======================================================
 
-print("\n==============================")
-print("BUSINESS SCENARIO 1: PROFIT ANALYSIS")
-print("==============================")
+
+print("BUSINESS SCENARIO 1: PRODUCT PERFOMANCE ANALYSIS")
+
+
 # Goal: Identify if a product is profitable or not and print a message
-for i in range(3):
-    sample_row = df.iloc[i]
-    product = Product(sample_row['Product ID'], sample_row['Category'],
-                      sample_row['Sub-Category'], sample_row['Product Name'],
-                      sample_row['Sales'], sample_row['Quantity'],
-                      sample_row['Discount'], sample_row['Profit'])
-    print(product.show_info())
-    if product.profit_margin() > 20:
-        print("This product is performing well with high profit margin.\n")
-    else:
-        print("Low profit margin. Needs review.\n")
+# for i in range(3):
+#     sample_row = df.iloc[i]
+#     product = Product(sample_row['Product ID'], sample_row['Category'],
+#                       sample_row['Sub-Category'], sample_row['Product Name'],
+#                       sample_row['Sales'], sample_row['Quantity'],
+#                       sample_row['Discount'], sample_row['Profit'])
+#     print(product.show_info())
+#     if product.profit_margin() > 20:
+#         print("This product is performing well with high profit margin.\n")
+#     else:
+#         print("Low profit margin. Needs review.\n")
 
-print("==============================")
-print("BUSINESS SCENARIO 2: SHIPPING PERFORMANCE")
-print("==============================")
-# Goal: Check how many orders were shipped in each mode for first few entries
-shipment_counts = {}
-for i in range(5):
-    ship = Shipment(df.iloc[i]['Ship Mode'], df.iloc[i]['Ship Date'], df.iloc[i]['City'])
-    # Count how many times each ship mode appears
-    shipment_counts[ship.ship_mode] = shipment_counts.get(ship.ship_mode, 0) + 1
-    print(ship.show_info())
 
-print("\nShipping Mode Summary:", shipment_counts)
+# print("BUSINESS SCENARIO 2: SHIPPING PERFORMANCE")
+
+# # Goal: Check how many orders were shipped in each mode for first few entries
+# shipment_counts = {}
+# for i in range(5):
+#     ship = Shipment(df.iloc[i]['Ship Mode'], df.iloc[i]['Ship Date'], df.iloc[i]['City'])
+#     # Count how many times each ship mode appears
+#     shipment_counts[ship.ship_mode] = shipment_counts.get(ship.ship_mode, 0) + 1
+#     print(ship.show_info())
+
+# print("\nShipping Mode Summary:", shipment_counts)
+
+
+# ==========================================================
+# BUSINESS SCENARIO 1: Customer Order Summary and Profit Analysis
+# ==========================================================
+
+
+def create_customer_orders(dataframe):
+    """Creates and returns a list of Order objects with linked Customer and Product details."""
+    orders = []
+
+    # Use the first 5 rows to create sample orders for demonstration
+    for _, row in dataframe.head(5).iterrows():
+        # Create a Customer object
+        customer = Customer(row['Customer ID'], row['Customer Name'], row['Region'])
+
+        # Create an Order object using inherited Product attributes
+        order = Order(
+            order_id=row['Order ID'],
+            order_date=row['Order Date'],
+            customer=customer,
+            product_id=row['Product ID'],
+            category=row['Category'],
+            sub_category=row['Sub-Category'],
+            name=row['Product Name'],
+            sales=row['Sales'],
+            quantity=row['Quantity'],
+            discount=row['Discount'],
+            profit=row['Profit']
+        )
+
+        # Add the new order to the list
+        orders.append(order)
+
+    return orders
+
+
+def display_order_summaries(orders):
+    """Prints a summary of each order, showing customer info, sales, discount, and profit margin."""
+    print("\n*** CUSTOMER ORDER SUMMARY AND PROFIT ANALYSIS ***\n")
+
+    total_sales = 0
+    total_profit = 0
+
+    # Loop through each order object
+    for order in orders:
+        # Print readable summary for each order
+        print(f"Order ID: {order.order_id}")
+        print(f"Customer: {order.customer.get_customer_info()}")  # Uses encapsulated getter
+        print(f"Product: {order.name} ({order.category} - {order.sub_category})")
+        print(f"Quantity: {order.quantity}")
+        print(f"Sales (before discount): ${order.sales * order.quantity:.2f}")
+        print(f"Discount Applied: {order.discount * 100:.0f}%")
+        print(f"Final Total (after discount): ${order.discounted_total():.2f}")
+        print(f"Profit Margin: {order.profit_margin():.2f}%")
+        print("-" * 80)
+
+        # Keep running totals for business reporting
+        total_sales += order.discounted_total()
+        total_profit += order.profit
+
+    # Display overall totals
+    print("\n *** OVERALL BUSINESS PERFORMANCE ***")
+    print(f"Total Orders: {len(orders)}")
+    print(f"Total Sales (after discount): ${total_sales:.2f}")
+    print(f"Total Profit: ${total_profit:.2f}")
+    print(f"Average Profit Margin: {(total_profit / total_sales) * 100:.2f}%")
+    print("====================================================================\n")
+
+
+# RUN THE SCENARIO ==============
+print("\n--- Running Scenario 1: Customer Order Summary and Profit Analysis ---")
+
+# Create Customer and Order objects from dataset
+customer_orders = create_customer_orders(df)
+
+# Display summaries for all created orders
+display_order_summaries(customer_orders)
+
+# ==========================================================
+# SCENARIO 2: Regional Sales and Shipping Efficiency Report
+# ==========================================================
+
+import datetime
+
+
+# Function to simulate creation of Order and Shipment objects from a few dataset rows
+def create_sample_orders(dataframe):
+    """Creates a list of Order objects using sample rows from the dataset."""
+    sample_orders = []
+
+    # Take only the first 10 rows for demonstration purposes
+    for _, row in dataframe.head(10).iterrows():
+        # Create a Customer object
+        customer = Customer(row["Customer ID"], row["Customer Name"], row["Region"])
+
+        # Create a Shipment object
+        shipment = Shipment(row["Ship Mode"], row["Ship Date"], row["City"])
+
+        # Create an Order object (inherits Product details)
+        order = Order(
+            order_id=row["Order ID"],
+            order_date=row["Order Date"],
+            customer=customer,
+            product_id=row["Product ID"],
+            category=row["Category"],
+            sub_category=row["Sub-Category"],
+            name=row["Product Name"],
+            sales=row["Sales"],
+            quantity=row["Quantity"],
+            discount=row["Discount"],
+            profit=row["Profit"]
+        )
+
+        # Attach shipment to the order (composition relationship)
+        order.shipment = shipment
+
+        # Add to the list
+        sample_orders.append(order)
+
+    return sample_orders
+
+
+# Function to calculate regional performance
+def analyze_regional_sales(orders):
+    """Groups orders by region and calculates key metrics (total sales, order count, average shipping delay)."""
+
+    region_data = {}
+
+    for order in orders:
+        region = order.customer.get_region()  # Get region from Customer object
+        ship_date = pd.to_datetime(order.shipment.ship_date)
+        order_date = pd.to_datetime(order.order_date)
+
+        # Calculate shipping delay in days
+        shipping_delay = (ship_date - order_date).days
+
+        # Add region data if not already
+        if region not in region_data:
+            region_data[region] = {
+                "total_sales": 0,
+                "order_count": 0,
+                "total_shipping_delay": 0
+            }
+
+        # Update metrics for the region
+        region_data[region]["total_sales"] += order.total_sales()
+        region_data[region]["order_count"] += 1
+        region_data[region]["total_shipping_delay"] += shipping_delay
+
+    # Print region-wise summary
+    print("\n *** REGIONAL SALES AND SHIPPING EFFICIENCY REPORT ***\n")
+    print("*" * 50)
+    for region, stats in region_data.items():
+        avg_delay = stats["total_shipping_delay"] / stats["order_count"]
+        print(f"Region: {region}")
+        print(f"  Total Orders: {stats['order_count']}")
+        print(f"  Total Sales: ${stats['total_sales']:.2f}")
+        print(f"  Average Shipping Delay: {avg_delay:.1f} days")
+        print("-" * 55)
+
+
+# ============= RUN THE SCENARIO ==============
+print("\n\n--- Running Scenario 2: Regional Sales and Shipping Efficiency Report ---")
+
+# Create a few sample order objects
+orders_list = create_sample_orders(df)
+
+# Display details of the first few orders to show polymorphism (same show_info() name used in Shipment & Order)
+print("\nSample Order Details:\n")
+for order in orders_list[:3]:
+    print(order.order_summary())  # From Order class
+    print(order.shipment.show_info())  # From Shipment class
+    print("-" * 50)
+
+# Analyze and display region-wise performance
+analyze_regional_sales(orders_list)
