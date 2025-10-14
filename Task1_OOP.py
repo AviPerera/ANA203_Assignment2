@@ -8,26 +8,22 @@
 # OOP concepts demonstrated in this script:
 # *******************************************
 
-# =================
 # ABSTRACTION
 # ==================
 # Abstraction means hiding complex details and showing only necessary information.
 # For example, when creating a Customer object, we don’t need to know how it stores or calculates data.
 # We just use its methods like get_customer_info().
 
-# =================
 # ENCAPSULATION
 # =================
 # Encapsulation means keeping data safe by restricting direct access.
 # We use private variables (with underscores like _name) and public methods to access them safely.
 
-# ==================
 # INHERITANCE
 # =================
 # Inheritance means one class can reuse or extend another.
 # For example, both Category and Product can share common properties like name and ID.
 
-# =================
 # POLYMORPHISM
 # =================
 # Polymorphism means that methods with the same name can behave differently for different classes.
@@ -39,12 +35,9 @@
 
 # Scenario 1: Customer Order Summary and Profit Analysis
 # ----------------------------------------------------------
-# In this scenario, the system creates several Customer, Product, and Order objects
-# using data from the Superstore dataset.
-# It demonstrates how an Order object links Customer and Product classes through
-# inheritance and composition.
-# The program calculates each order’s total sales, discount, and profit margin,
-# then prints a readable summary for managers to quickly review sales performance.
+# In this scenario, the system creates several Customer, Product, and Order objects using data from the Superstore dataset.
+# It demonstrates how an Order object links Customer and Product classes through inheritance and composition.
+# The program calculates each order’s total sales, discount, and profit margin, then prints a readable summary for managers to quickly review sales performance.
 #
 # Demonstrated OOP Concepts:
 # - Abstraction: Hiding internal calculations in methods (ex: discounted_total()).
@@ -54,12 +47,8 @@
 #
 # Scenario 2: Regional Sales and Shipping Efficiency Report
 # ----------------------------------------------------------
-# This scenario simulates a regional sales analysis where the system groups orders
-# by customer region and calculates the total number of orders, sales revenue, and
-# average shipping delay per region.
-# It uses multiple objects (Customer, Order, Shipment) working together to provide
-# a practical business insight helping management identify which regions perform best
-# and whether certain shipping modes are slower or less efficient.
+# This scenario simulates a regional sales analysis where the system groups orders by customer region and calculates the total number of orders, sales revenue, and average shipping delay per region.
+# It uses multiple objects (Customer, Order, Shipment) working together to provide a practical business insight helping management identify which regions perform best and whether certain shipping modes are slower or less efficient.
 #
 # Demonstrated OOP Concepts:
 # - Reusability: Using existing classes to build new analytics without rewriting logic.
