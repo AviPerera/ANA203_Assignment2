@@ -73,3 +73,40 @@ print("=== ELEMENT-WISE OPERATIONS EXAMPLES ===")
 print("First 5 Profit Ratios (%):", np.round(profit_ratio[:5] * 100, 2))
 print("First 5 Discounted Sales ($):", np.round(discounted_sales[:5], 2))
 print("=" * 50)
+
+# ===============================================================
+# 4: Demonstrate array slicing
+# ===============================================================
+# Array slicing helps extract specific portions of an array efficiently
+
+print("=== ARRAY SLICING EXAMPLES ===")
+print("First 5 Sales Values:", sales_array[:5])     # First 5 elements
+print("Every 10th Sale Record:", sales_array[::10])  # Every 10th element
+print("Last 5 Profit Values:", profit_array[-5:])    # Last 5 elements
+print("=" * 50)
+
+# ===============================================================
+# 5: Compare NumPy arrays with Python lists (Performance)
+# ===============================================================
+# This test shows how NumPy is faster than Python lists for large data.
+
+import time
+
+# Convert arrays to Python lists
+sales_list = sales_array.tolist()
+
+# Time how long it takes to sum all sales using Python list
+start_time = time.time()
+sum_sales_list = sum(sales_list)
+list_time = time.time() - start_time
+
+# Time how long it takes using NumPy
+start_time = time.time()
+sum_sales_numpy = np.sum(sales_array)
+numpy_time = time.time() - start_time
+
+print("*** PERFORMANCE COMPARISON ***")
+print(f"Sum using Python list: ${sum_sales_list:.2f} (Time: {list_time:.6f} seconds)")
+print(f"Sum using NumPy array: ${sum_sales_numpy:.2f} (Time: {numpy_time:.6f} seconds)")
+print(f"NumPy is approximately {list_time / numpy_time:.2f}x faster!")
+print("=" * 50)
