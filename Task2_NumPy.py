@@ -110,3 +110,52 @@ print(f"Sum using Python list: ${sum_sales_list:.2f} (Time: {list_time:.6f} seco
 print(f"Sum using NumPy array: ${sum_sales_numpy:.2f} (Time: {numpy_time:.6f} seconds)")
 print(f"NumPy is approximately {list_time / numpy_time:.2f}x faster!")
 print("=" * 50)
+
+# ===============================================================
+# Business Insight Examples
+# ===============================================================
+
+# Bisiness insight 1: Determining profitability trends and discount impact
+# ===============================================================
+
+# Using NumPy results to generate a realworld insight for managers/ owners by calculating correlation between discounts and profits
+correlation = np.corrcoef(discount_array, profit_array)[0, 1]
+
+print("*** BUSINESS INSIGHTS: ")
+print(f"Correlation between Discount and Profit: {correlation:.2f}")
+if correlation < 0:
+    print("Insight: Higher discounts tend to reduce profit margins.")
+else:
+    print("Insight: Discounts are positively influencing profit (unusual scenario).")
+print("=" * 50)
+
+# Bisiness insight 2: Identifying high-profit products and risk of low-profit items
+# ===============================================================
+
+# Using NumPy, we can find products that are consistently profitable
+# and those that have very low or negative profits, helping managers
+# make inventory and pricing decisions.
+
+# Find the top 5 most profitable products (based on profit)
+top_5_profit_indices = np.argsort(profit_array)[-5:]  # indices of 5 largest profits
+top_5_profit_sales = sales_array[top_5_profit_indices]
+top_5_profit = profit_array[top_5_profit_indices]
+
+print("*** TOP 5 MOST PROFITABLE ORDERS ***")
+for i in range(5):
+    print(f"Order Index: {top_5_profit_indices[i]}, Sales: ${top_5_profit_sales[i]:.2f}, Profit: ${top_5_profit[i]:.2f}")
+print("=" * 50)
+
+
+# Find orders with negative profit (loss-making)
+loss_indices = np.where(profit_array < 0)[0]  # indices where profit < 0
+num_losses = len(loss_indices)
+total_loss = profit_array[loss_indices].sum()
+
+
+
+print("*** LOSS-MAKING ORDERS ***")
+print(f"Number of orders with negative profit: {num_losses}")
+print(f"Total loss from these orders: ${total_loss:.2f}")
+print("Insight: Managers may review pricing, discounts, or suppliers for these orders.")
+print("=" * 50)
