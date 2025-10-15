@@ -418,7 +418,7 @@ def create_sample_orders(dataframe):
 
 
 # Function to calculate regional performance
-def analyze_regional_sales(orders):
+def analyse_regional_sales(orders):
     """Groups orders by region and calculates key metrics (total sales, order count, average shipping delay)."""
 
     region_data = {}
@@ -469,5 +469,5 @@ for order in orders_list[:3]:
     print(order.shipment.show_info())  # From Shipment class
     print("-" * 50)
 
-# Analyze and display region-wise performance
-analyze_regional_sales(orders_list)
+# Analyse and display region-wise performance
+analyse_regional_sales(orders_list)
