@@ -5,6 +5,28 @@
 # It extracts sales, profit, and discount data from the Superstore dataset and performs statistical calculations using vectorised NumPy operations.
 #
 
+
+# This Demonstrates following concepts:
+# - Creating and manipulating NumPy arrays
+# - Performing mean, median, and standard deviation calculations
+# - Applying element-wise operations
+# - Demonstrating array slicing
+# - Comparing NumPy performance with Python lists
+#
+
+
+# Real World Advantages of NumPy arrays:
+# 1️. SPEED: NumPy arrays process large numeric data much faster than Python lists,
+#    making it ideal for analytics on big datasets (e.g., thousands of sales records).
+# 2️. VECTORIZATION: NumPy performs operations on entire arrays at once without loops,
+#    which makes code simpler, cleaner, and less error-prone.
+# ===============================================================
+
+#Busniness Insights from Numpy
+
+#Bisiness insight 1: Determining profitability trends and discount impact
+# Insight 2: Identifying high-profit products and risk of low-profit items
+
 import numpy as np
 import pandas as pd
 
@@ -132,9 +154,7 @@ print("=" * 50)
 # Bisiness insight 2: Identifying high-profit products and risk of low-profit items
 # ===============================================================
 
-# Using NumPy, we can find products that are consistently profitable
-# and those that have very low or negative profits, helping managers
-# make inventory and pricing decisions.
+# Using NumPy, we can find products that are consistently profitable and those that have very low or negative profits, helping managers make inventory and pricing decisions.
 
 # Find the top 5 most profitable products (based on profit)
 top_5_profit_indices = np.argsort(profit_array)[-5:]  # indices of 5 largest profits
@@ -147,14 +167,14 @@ for i in range(5):
 print("=" * 50)
 
 
-# Find orders with negative profit (loss-making)
+# Find orders with negative profit
 loss_indices = np.where(profit_array < 0)[0]  # indices where profit < 0
 num_losses = len(loss_indices)
 total_loss = profit_array[loss_indices].sum()
 
 
 
-print("*** LOSS-MAKING ORDERS ***")
+print("*** TOP NEGATIVE PROFIT ORDERS ***")
 print(f"Number of orders with negative profit: {num_losses}")
 print(f"Total loss from these orders: ${total_loss:.2f}")
 print("Insight: Managers may review pricing, discounts, or suppliers for these orders.")
