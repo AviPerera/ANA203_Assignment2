@@ -106,4 +106,85 @@ except FileNotFoundError:
                 f"Please ensure the file '{csv_file_path}' is in your project folder "
                 f"or update the GitHub URL."
             )
+# ============================================================================
+# Data Profiling: Understanding the dataset
+# ============================================================================
 
+print("\n" + "="*50)
+print("DATA PROFILING: INITIAL DATASET OVERVIEW")
+print("="*80)
+
+# Display basic dataset information
+# df.shape[0] gives number of rows, df.shape[1] gives number of columns
+print(f"\nDataset Shape: {df.shape[0]} rows × {df.shape[1]} columns")
+# Calculate memory usage: memory_usage(deep=True) gives accurate memory
+print(f"Memory Usage: {df.memory_usage(deep=True).sum() / 1024**2:.2f} MB")
+
+
+print("\n" + "-"*50)
+print("Column Information:")
+print("-"*80)
+
+print(df.info())# df.info() shows column names, data types, non-null counts, and memory usage
+
+
+print("\n" + "-"*50)
+print("First 5 Rows (Sample Data):")
+print("-"*80)
+
+print(df.head())# df.head() displays the first 5 rows of the dataset so we can see what the data looks like
+
+
+print("\n" + "-"*50)
+print("Statistical Summary (Numerical Columns):")
+print("-"*50)
+# df.describe() provides count, mean, std, min, quartiles, and max for all numerical columns
+print(df.describe())
+
+
+print("\n" + "-"*50)
+print("Missing Values Analysis:")
+print("-"*50)
+# Create a DataFrame to analyze missing values
+missing_data = pd.DataFrame({
+    'Column': df.columns,  # List all column names
+    'Missing Count': df.isnull().sum(),  # Count how many missing values in each column
+    'Missing %': (df.isnull().sum() / len(df) * 100).round(2)  # Calculate percentage of missing values
+})
+# Filter to only show columns that have missing values, sorted by most missing first
+missing_data = missing_data[missing_data['Missing Count'] > 0].sort_values('Missing Count', ascending=False)
+
+# Check if there are any missing values
+if len(missing_data) > 0:
+    print(missing_data.to_string(index=False))# If missing values exist, display the table without row index numbers
+else:
+    print("No missing values detected in the dataset.")
+
+
+
+print("\n" + "-"*80)
+print("Duplicate Rows Check:")
+print("-"*80)
+# Count how many rows are exact duplicates of other rows
+duplicate_count = df.duplicated().sum()
+# Check if duplicates exist
+if duplicate_count > 0:
+    # If duplicates found, show count and percentage
+    print(f"Found {duplicate_count} duplicate rows ({duplicate_count/len(df)*100:.2f}%)")
+else:
+    print("No duplicate rows found.")
+
+
+print("\nData Profiling Complete.")
+print("="*80)
+
+print("\nDataset loaded successfully for NumPy analysis!")
+print("=" * 50)
+
+# Convert the date columns so we can work with them properly
+df['Order Date'] = pd.to_datetime(df['Order Date'])
+df['Ship Date'] = pd.to_datetime(df['Ship Date'])
+
+print("="*50)
+print("SUPERSTORE DATA EXPLORATION")
+print("="*50)
