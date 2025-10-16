@@ -1,5 +1,21 @@
 # Task 1: Object Oriented Programming
+# =============================================
 
+# Project: Comprehensive Exploratory Data Analysis of Superstore Sales Dataset
+# Date: October 2025
+# Unit: ANA203 Data Wrangling and Analysis with Python
+
+# CODE REPOSITORY:
+# Available on GitHub: https://github.com/AviPerera/ANA203_Assignment2
+# Repository includes: Superstore dataset, 4 Task Files
+
+# DATASET SUMMARY:
+# - File: Sample - Superstore.csv
+# - Columns: Row ID, Order ID, Order Date, Ship Date, Ship Mode, Customer ID,
+#   Customer Name, Segment, Country, City, State, Postal Code, Region, Product ID,
+#   Category, Sub-Category, Product Name, Sales, Quantity, Discount, Profit
+
+# SCRIPT OVERVIEW:
 # =============================================
 # This script demonstrates OOP concepts (Abstraction, Encapsulation, Inheritance, Polymorphism)
 # using the Superstore dataset. It models real-world business entities such as Customer, Product, Order, Category, and Shipment.
@@ -29,7 +45,7 @@
 # Polymorphism means that methods with the same name can behave differently for different classes.
 # Example: The show_info() method is defined differently in several classes.
 
-# Example busness scenarios demonstrated in this script:
+# Example business scenarios demonstrated in this script:
 # *******************************************************
 
 
@@ -58,31 +74,135 @@
 # ==========================================================
 
 
-# import  required libararies
+# import  required libraries
 import pandas as pd
 import re
 
 # Load CSV File
 csv_file_path = "Sample - Superstore.csv"  # Load the Superstore dataset from the current project folder
+github_url = "https://github.com/AviPerera/ANA203_Assignment2/blob/master/Sample%20-%20Superstore.csv"
 
-df = pd.read_csv(csv_file_path, on_bad_lines='skip', encoding='latin-1')
+try:
+    # Using TRY block: Attempt to read the CSV file directly from the project root folder.
+    # This works for:
+    # - PyCharm (local project folder)
+    # - Google Colab if the file has already been uploaded to the Colab root (/content)
+    df = pd.read_csv(csv_file_path, on_bad_lines='skip', encoding='latin-1')
+    print("Dataset loaded from project root or Colab root.")
 
-# Print dataset shape, top and bottom rows, descriptive statistics to confirm successful loading
-print("\nDataset rows and columns: ", df.shape)
-print("=" * 40)
+# If file is not found
+except FileNotFoundError:
+    # This block runs if the file wasn't found in the project root
+    print("✗ File not found in project root. Checking alternative options...")
 
-# Print dataset column names
-print("\nColumn names:")
-print(df.columns.tolist())
-print("=" * 40)
+    try:
+        # Option 2: Try Google Colab file upload
+        # Import the files module from google.colab (only available in Colab environment)
+        from google.colab import files
 
-print("Top 5 rows :\n", df.head(5))
-print("=" * 40)
+        # Tell the user to upload the file
+        print("\n Please upload the CSV file...")
+        # Open the file upload dialog in Colab and store uploaded files
+        uploaded = files.upload()
 
-print("Descriptive Statistics: \n", df.describe())
+        # Check if the correct filename was uploaded
+        if csv_file_path in uploaded:
+            # Load the uploaded file into a DataFrame with same parameters as before
+            df = pd.read_csv(csv_file_path, on_bad_lines='skip', encoding='latin-1')
+            # Confirm successful upload and load
+            print("Dataset loaded successfully from uploaded file.")
+        else:
+            # If wrong file was uploaded, raise an error
+            raise FileNotFoundError(f"{csv_file_path} was not uploaded correctly.")
 
-print("\nDataset loaded successfully! \n")
+    except ImportError:
+        # This runs if we're not in Colab (ImportError means google.colab doesn't exist)
+        # Option 3: Load from GitHub if not in Colab
+        print("Not running in Google Colab. Attempting to load from GitHub...")
+        try:
+            # Try to load the file directly from the GitHub URL
+            df = pd.read_csv(github_url, on_bad_lines='skip', encoding='latin-1')
+            # Confirm successful load from GitHub
+            print("Dataset loaded successfully from GitHub repository.")
+        except Exception as e:
+            # If all three methods fail, raise a helpful error message
+            raise FileNotFoundError(
+                f"Could not load dataset from any source. Error: {str(e)}\n"
+                f"Please ensure the file '{csv_file_path}' is in your project folder "
+                f"or update the GitHub URL."
+            )
 
+# ============================================================================
+# Data Profiling: Understanding the dataset
+# ============================================================================
+
+print("\n" + "="*50)
+print("DATA PROFILING: INITIAL DATASET OVERVIEW")
+print("="*80)
+
+# Display basic dataset information
+# df.shape[0] gives number of rows, df.shape[1] gives number of columns
+print(f"\nDataset Shape: {df.shape[0]} rows × {df.shape[1]} columns")
+# Calculate memory usage: memory_usage(deep=True) gives accurate memory
+print(f"Memory Usage: {df.memory_usage(deep=True).sum() / 1024**2:.2f} MB")
+
+
+print("\n" + "-"*50)
+print("Column Information:")
+print("-"*80)
+
+print(df.info())# df.info() shows column names, data types, non-null counts, and memory usage
+
+
+print("\n" + "-"*50)
+print("First 5 Rows (Sample Data):")
+print("-"*80)
+
+print(df.head())# df.head() displays the first 5 rows of the dataset so we can see what the data looks like
+
+
+print("\n" + "-"*50)
+print("Statistical Summary (Numerical Columns):")
+print("-"*50)
+# df.describe() provides count, mean, std, min, quartiles, and max for all numerical columns
+print(df.describe())
+
+
+print("\n" + "-"*50)
+print("Missing Values Analysis:")
+print("-"*50)
+# Create a DataFrame to analyze missing values
+missing_data = pd.DataFrame({
+    'Column': df.columns,  # List all column names
+    'Missing Count': df.isnull().sum(),  # Count how many missing values in each column
+    'Missing %': (df.isnull().sum() / len(df) * 100).round(2)  # Calculate percentage of missing values
+})
+# Filter to only show columns that have missing values, sorted by most missing first
+missing_data = missing_data[missing_data['Missing Count'] > 0].sort_values('Missing Count', ascending=False)
+
+# Check if there are any missing values
+if len(missing_data) > 0:
+    print(missing_data.to_string(index=False))# If missing values exist, display the table without row index numbers
+else:
+    print("No missing values detected in the dataset.")
+
+
+
+print("\n" + "-"*80)
+print("Duplicate Rows Check:")
+print("-"*80)
+# Count how many rows are exact duplicates of other rows
+duplicate_count = df.duplicated().sum()
+# Check if duplicates exist
+if duplicate_count > 0:
+    # If duplicates found, show count and percentage
+    print(f"Found {duplicate_count} duplicate rows ({duplicate_count/len(df)*100:.2f}%)")
+else:
+    print("No duplicate rows found.")
+
+
+print("\nData Profiling Complete.")
+print("="*80)
 
 # ======================================================
 # Class 1: Customer
@@ -267,34 +387,6 @@ print(" Is customer ID valid?", Customer.validate_customer_id(customer1.customer
 
 
 print("BUSINESS SCENARIO 1: PRODUCT PERFOMANCE ANALYSIS")
-
-
-# Goal: Identify if a product is profitable or not and print a message
-# for i in range(3):
-#     sample_row = df.iloc[i]
-#     product = Product(sample_row['Product ID'], sample_row['Category'],
-#                       sample_row['Sub-Category'], sample_row['Product Name'],
-#                       sample_row['Sales'], sample_row['Quantity'],
-#                       sample_row['Discount'], sample_row['Profit'])
-#     print(product.show_info())
-#     if product.profit_margin() > 20:
-#         print("This product is performing well with high profit margin.\n")
-#     else:
-#         print("Low profit margin. Needs review.\n")
-
-
-# print("BUSINESS SCENARIO 2: SHIPPING PERFORMANCE")
-
-# # Goal: Check how many orders were shipped in each mode for first few entries
-# shipment_counts = {}
-# for i in range(5):
-#     ship = Shipment(df.iloc[i]['Ship Mode'], df.iloc[i]['Ship Date'], df.iloc[i]['City'])
-#     # Count how many times each ship mode appears
-#     shipment_counts[ship.ship_mode] = shipment_counts.get(ship.ship_mode, 0) + 1
-#     print(ship.show_info())
-
-# print("\nShipping Mode Summary:", shipment_counts)
-
 
 # ==========================================================
 # BUSINESS SCENARIO 1: Customer Order Summary and Profit Analysis

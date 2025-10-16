@@ -1,6 +1,13 @@
 # TASK 2: NumPy Arrays
 # ===============================================================
 
+# Project: Comprehensive Exploratory Data Analysis of Superstore Sales Dataset
+# Date: October 2025
+# Unit: ANA203 Data Wrangling and Analysis with Python
+
+# CODE REPOSITORY:
+# Available on GitHub: https://github.com/AviPerera/ANA203_Assignment2
+# Repository includes: Superstore dataset, 4 Task Files
 # This task demonstrates how to use NumPy for efficient numeric analysis.
 # It extracts sales, profit, and discount data from the Superstore dataset and performs statistical calculations using vectorised NumPy operations.
 #
@@ -22,17 +29,140 @@
 #    which makes code simpler, cleaner, and less error-prone.
 # ===============================================================
 
-#Busniness Insights from Numpy
+#Busniness Insights using  Numpy
 
-#Bisiness insight 1: Determining profitability trends and discount impact
-# Insight 2: Identifying high-profit products and risk of low-profit items
+#   Business insight 1: Determining profitability trends and discount impact
+#   Business Insight 2: Identifying high-profit products and risk of low profit items
 
 import numpy as np
 import pandas as pd
 
-# Load dataset
-csv_file_path = "Sample - Superstore.csv"   # File must be in the same project folder
-df = pd.read_csv(csv_file_path, on_bad_lines='skip', encoding='latin-1')
+
+# Load CSV File
+csv_file_path = "Sample - Superstore.csv"  # Load the Superstore dataset from the current project folder
+github_url = "https://github.com/AviPerera/ANA203_Assignment2/blob/master/Sample%20-%20Superstore.csv"
+
+try:
+    # Using TRY block: Attempt to read the CSV file directly from the project root folder.
+    # This works for:
+    # - PyCharm (local project folder)
+    # - Google Colab if the file has already been uploaded to the Colab root (/content)
+    df = pd.read_csv(csv_file_path, on_bad_lines='skip', encoding='latin-1')
+    print("Dataset loaded from project root or Colab root.")
+
+# If file is not found
+except FileNotFoundError:
+    # This block runs if the file wasn't found in the project root
+    print("✗ File not found in project root. Checking alternative options...")
+
+    try:
+        # Option 2: Try Google Colab file upload
+        # Import the files module from google.colab (only available in Colab environment)
+        from google.colab import files
+
+        # Tell the user to upload the file
+        print("\n Please upload the CSV file...")
+        # Open the file upload dialog in Colab and store uploaded files
+        uploaded = files.upload()
+
+        # Check if the correct filename was uploaded
+        if csv_file_path in uploaded:
+            # Load the uploaded file into a DataFrame with same parameters as before
+            df = pd.read_csv(csv_file_path, on_bad_lines='skip', encoding='latin-1')
+            # Confirm successful upload and load
+            print("Dataset loaded successfully from uploaded file.")
+        else:
+            # If wrong file was uploaded, raise an error
+            raise FileNotFoundError(f"{csv_file_path} was not uploaded correctly.")
+
+    except ImportError:
+        # This runs if we're not in Colab (ImportError means google.colab doesn't exist)
+        # Option 3: Load from GitHub if not in Colab
+        print("Not running in Google Colab. Attempting to load from GitHub...")
+        try:
+            # Try to load the file directly from the GitHub URL
+            df = pd.read_csv(github_url, on_bad_lines='skip', encoding='latin-1')
+            # Confirm successful load from GitHub
+            print("Dataset loaded successfully from GitHub repository.")
+        except Exception as e:
+            # If all three methods fail, raise a helpful error message
+            raise FileNotFoundError(
+                f"Could not load dataset from any source. Error: {str(e)}\n"
+                f"Please ensure the file '{csv_file_path}' is in your project folder "
+                f"or update the GitHub URL."
+            )
+
+# ============================================================================
+# Data Profiling: Understanding the dataset
+# ============================================================================
+
+print("\n" + "="*50)
+print("DATA PROFILING: INITIAL DATASET OVERVIEW")
+print("="*80)
+
+# Display basic dataset information
+# df.shape[0] gives number of rows, df.shape[1] gives number of columns
+print(f"\nDataset Shape: {df.shape[0]} rows × {df.shape[1]} columns")
+# Calculate memory usage: memory_usage(deep=True) gives accurate memory
+print(f"Memory Usage: {df.memory_usage(deep=True).sum() / 1024**2:.2f} MB")
+
+
+print("\n" + "-"*50)
+print("Column Information:")
+print("-"*80)
+
+print(df.info())# df.info() shows column names, data types, non-null counts, and memory usage
+
+
+print("\n" + "-"*50)
+print("First 5 Rows (Sample Data):")
+print("-"*80)
+
+print(df.head())# df.head() displays the first 5 rows of the dataset so we can see what the data looks like
+
+
+print("\n" + "-"*50)
+print("Statistical Summary (Numerical Columns):")
+print("-"*50)
+# df.describe() provides count, mean, std, min, quartiles, and max for all numerical columns
+print(df.describe())
+
+
+print("\n" + "-"*50)
+print("Missing Values Analysis:")
+print("-"*50)
+# Create a DataFrame to analyze missing values
+missing_data = pd.DataFrame({
+    'Column': df.columns,  # List all column names
+    'Missing Count': df.isnull().sum(),  # Count how many missing values in each column
+    'Missing %': (df.isnull().sum() / len(df) * 100).round(2)  # Calculate percentage of missing values
+})
+# Filter to only show columns that have missing values, sorted by most missing first
+missing_data = missing_data[missing_data['Missing Count'] > 0].sort_values('Missing Count', ascending=False)
+
+# Check if there are any missing values
+if len(missing_data) > 0:
+    print(missing_data.to_string(index=False))# If missing values exist, display the table without row index numbers
+else:
+    print("No missing values detected in the dataset.")
+
+
+
+print("\n" + "-"*80)
+print("Duplicate Rows Check:")
+print("-"*80)
+# Count how many rows are exact duplicates of other rows
+duplicate_count = df.duplicated().sum()
+# Check if duplicates exist
+if duplicate_count > 0:
+    # If duplicates found, show count and percentage
+    print(f"Found {duplicate_count} duplicate rows ({duplicate_count/len(df)*100:.2f}%)")
+else:
+    print("No duplicate rows found.")
+
+
+print("\nData Profiling Complete.")
+print("="*80)
 
 print("\nDataset loaded successfully for NumPy analysis!")
 print("=" * 50)
@@ -130,7 +260,11 @@ numpy_time = time.time() - start_time
 print("*** PERFORMANCE COMPARISON ***")
 print(f"Sum using Python list: ${sum_sales_list:.2f} (Time: {list_time:.6f} seconds)")
 print(f"Sum using NumPy array: ${sum_sales_numpy:.2f} (Time: {numpy_time:.6f} seconds)")
-print(f"NumPy is approximately {list_time / numpy_time:.2f}x faster!")
+
+if numpy_time == 0:
+    print("NumPy operation was too fast to measure accurately.")
+else:
+    print(f"NumPy is approximately {list_time / numpy_time:.2f}x faster!")
 print("=" * 50)
 
 # ===============================================================
