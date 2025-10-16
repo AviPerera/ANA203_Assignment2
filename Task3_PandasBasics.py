@@ -93,3 +93,58 @@ west_region_orders_subset.to_csv("west_region_orders.csv", index=False)
 print("Saved West region orders to 'west_region_orders.csv'")
 
 print("\n Basic Pandas DataFrame operations completed successfully!")
+
+#===========================================
+#Real-world business scenarios where Pandas DataFrames are used
+#===========================================
+
+
+#===========================================
+# Scenario 1: Sales Performance Analysis
+#===========================================
+# Objective: Find total sales and average profit by Category and Region
+
+# Group the data by 'Category' and 'Region', calculate total sales and average profit
+sales_perf = df.groupby(['Category', 'Region']).agg(
+    total_sales=pd.NamedAgg(column='Sales', aggfunc='sum'),       # Sum of Sales per group
+    average_profit=pd.NamedAgg(column='Profit', aggfunc='mean')   # Average Profit per group
+).reset_index()  # Reset index to turn groupby object into DataFrame
+
+# Sort by total_sales descending for better insight
+sales_perf = sales_perf.sort_values(by='total_sales', ascending=False)
+
+# Display the result
+print("*** Scenario 1: Sales Performance Analysis ***")
+print(sales_perf.head(10))  # Show top 10 Category-Region combinations
+print("="*50)
+
+#===========================================
+# Scenario 2: Customer Segmentation
+#===========================================
+# Objective: Segment customers by total spending and number of orders
+
+# Calculate total spending and total number of orders per customer
+customer_segment = df.groupby(['Customer ID', 'Customer Name']).agg(
+    total_spent=pd.NamedAgg(column='Sales', aggfunc='sum'),      # Sum of sales per customer
+    total_orders=pd.NamedAgg(column='Order ID', aggfunc='nunique')  # Count unique orders per customer
+).reset_index()
+
+# segment customers into tiers based on total spending
+# Here we define 3 tiers: High (> $5000), Medium ($2000-$5000), Low (< $2000)
+def assign_tier(spent):
+    if spent > 5000:
+        return "High"
+    elif spent >= 2000:
+        return "Medium"
+    else:
+        return "Low"
+
+customer_segment['Tier'] = customer_segment['total_spent'].apply(assign_tier)  # Apply tier assignment
+
+# Sort customers by total spending descending
+customer_segment = customer_segment.sort_values(by='total_spent', ascending=False)
+
+# Display the top 10 customers
+print("*** Scenario 2: Customer Segmentation ***")
+print(customer_segment.head(10))
+print("="*50)
